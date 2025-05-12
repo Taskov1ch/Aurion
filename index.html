@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aurion</title>
+  <style>
+    :root {
+      --main-bg: #212121;
+      --card-bg: #2e2e2e;
+      --accent: #ff5722;
+      --accent-light: #ff7043;
+      --text-main: #ffffff;
+      --text-sub: #bdbdbd;
+      --timer-border: #ff6e40;
+      --timer-bg: #3c3c3c;
+    }
+    @font-face {
+      font-family: 'MinecraftTenCyrillic';
+      src: url('minecraft-ten-font-cyrillic.ttf') format('truetype');
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: "MinecraftTenCyrillic";
+      background-color: var(--main-bg);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      text-align: center;
+    }
+    header {
+      background-color: var(--accent);
+      padding: 0.625rem;
+    }
+    header img {
+      width: 6.25rem;
+    }
+    main {
+      flex: 1;
+      padding: 2.5rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .title {
+      font-size: 1.2rem;
+      color: var(--accent-light);
+    }
+    .subtitle {
+      font-size: 0.8rem;
+      margin-bottom: 3.125rem;
+      color: var(--text-sub);
+    }
+    .timer-box-title {
+      font-size: 1rem;
+      margin-bottom: 0.625rem;
+    }
+    .timer-box {
+      display: inline-block;
+      background-color: var(--timer-bg);
+      border: 2px solid var(--timer-border);
+      padding: 1.25rem 1.875rem;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: var(--accent-light);
+      margin-top: 0.3125rem;
+      border-radius: 0.625rem;
+      min-width: 17.5rem;
+    }
+    .unit {
+      margin: 0 0.375rem;
+    }
+    .digit {
+      display: inline-block;
+      transition: opacity 0.3s ease;
+      min-width: 1.5rem;
+    }
+    .digit.animating {
+      opacity: 0;
+    }
+    footer {
+      background-color: #1a1a1a;
+      padding: 1.25rem;
+      color: var(--text-sub);
+      font-size: 0.7rem;
+    }
+    a {
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="https://raw.githubusercontent.com/taskov1ch/aurion/main/title_1024x768.png" alt="Aurion logo" />
+  </header>
+
+  <main>
+    <div class="title">Сервер в разработке</div>
+    <div class="subtitle">Скоро будет готово, наверное...</div>
+    <div class="subtitle timer-box-title">Сервер в разработке уже:</div>
+    <div class="timer-box" id="timer"></div>
+  </main>
+
+  <footer>
+    "тут скоро будет Copyright"<br>
+    <a href="https://vk.com/aurion_be">VK</a>
+  </footer>
+
+  <script>
+    const launchDate = new Date("2025-05-06T00:00:00Z");
+    const timerEl = document.getElementById("timer");
+
+    const labels = ['дн', 'ч', 'мин', 'сек'];
+
+    function createUnit(value, label) {
+      const span = document.createElement('span');
+      span.className = 'unit';
+      span.innerHTML = `<span class="digit">${value}</span> ${label}`;
+      return span;
+    }
+
+    function updateDigits(container, newValues) {
+      const currentSpans = container.querySelectorAll('.unit');
+
+      newValues.forEach((val, idx) => {
+        const digitSpan = currentSpans[idx].querySelector('.digit');
+        if (digitSpan.innerText != val) {
+          digitSpan.classList.add('animating');
+          setTimeout(() => {
+            digitSpan.innerText = val;
+            digitSpan.classList.remove('animating');
+          }, 150);
+        }
+      });
+    }
+
+    function formatTime() {
+      const now = new Date();
+      let diff = Math.floor((now - launchDate) / 1000);
+
+      const days = Math.floor(diff / (24 * 3600));
+      diff %= 24 * 3600;
+      const hours = Math.floor(diff / 3600);
+      diff %= 3600;
+      const minutes = Math.floor(diff / 60);
+      const seconds = diff % 60;
+
+      return [days, hours, minutes, seconds];
+    }
+
+    function initTimer() {
+      const values = formatTime();
+      labels.forEach((label, i) => {
+        const unit = createUnit(values[i], label);
+        timerEl.appendChild(unit);
+      });
+    }
+
+    function refreshTimer() {
+      const values = formatTime();
+      updateDigits(timerEl, values);
+    }
+
+    initTimer();
+    setInterval(refreshTimer, 1000);
+  </script>
+</body>
+</html>
